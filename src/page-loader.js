@@ -1,12 +1,12 @@
 import axios from 'axios';
-import httpAdapter from 'axios/lib/adapters/http';
+// import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import url from 'url';
 
-axios.defaults.adapter = httpAdapter;
+// axios.defaults.adapter = httpAdapter;
 const fsPromises = fs.promises;
 
-const pageLoader = (path, address) => {
+const pageLoader = (path = '', address) => {
   console.log(fsPromises);
   console.log(path);
   console.log(address);
