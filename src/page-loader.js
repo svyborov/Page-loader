@@ -1,19 +1,28 @@
 import axios from 'axios';
-// import httpAdapter from 'axios/lib/adapters/http';
+import httpAdapter from 'axios/lib/adapters/http';
+import fs from 'fs';
+import url from 'url';
 
-const standardPath = '/home/plotno/projects/page-loader/Test/';
-const host = 'https://hexlet.io';
+axios.defaults.adapter = httpAdapter;
+const fsPromises = fs.promises;
 
-// axios.defaults.adapter = httpAdapter;
-axios.defaults.host = host;
-
-const pageLoader = (path = standardPath, address) => {
+const pageLoader = (path, address) => {
+  console.log(fsPromises);
   console.log(path);
   console.log(address);
   console.log(axios);
-  axios.get('/courses')
+  const regex = RegExp(/\w/);
+  const parsedAddress = url.parse(address);
+  const shortAddress = parsedAddress.host + parsedAddress.path;
+  const fileName = shortAddress.split('').reduce((acc, s) => (regex.test(s) ? acc + s : `${acc}-`), '');
+  axios.get(address)
     .then((response) => {
-      console.log(response);
+      console.log(response.data);
+      fsPromises.writeFile(`${path}${fileName}.html`, response.data)
+        .then(() => {
+          console.log(parsedAddress);
+          console.log('%%%DONE%%%');
+        });
     });
 };
 

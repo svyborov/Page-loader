@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import pageLoader from '../page-loader';
 
-pageLoader('qwe', 'zxc');
+const standardPath = '/home/plotno/Рабочий стол/TestPageLoader/';
+//const standardAddress = 'https://hexlet.io/courses'
+const standardAddress = 'https://www.4chords.ru/2018/10/akkordi-dispetchera-2000-baksov-za-sigaretu.html'
+
+pageLoader(standardPath, standardAddress);
 /*
 import pageLoader from 'commander';
 
