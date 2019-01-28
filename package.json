@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "commander": "^2.19.0"
+  },
   "devDependencies": {
     "eslint": "^5.12.1",
     "eslint-config-airbnb-base": "^13.1.0",
