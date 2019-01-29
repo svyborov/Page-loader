@@ -8,20 +8,21 @@ import pageLoader from '../src';
 
 const fsPromises = fs.promises;
 axios.defaults.adapter = httpAdapter;
-const pathToFixture = './__tests__/__fixtures__/hexlet-io-courses.html';
+const pathToFixture = './__tests__/__fixtures__/';
+const fileName = 'hexlet-io-courses.html';
 let pathToTemp;
 let htmlData;
 
 beforeEach(async () => {
   pathToTemp = await fsPromises.mkdtemp(`${os.tmpdir()}${path.sep}`);
-  htmlData = await fsPromises.readFile(pathToFixture);
+  htmlData = await fsPromises.readFile(path.resolve(pathToFixture, fileName));
+  nock('https://hexlet.io/')
+    .get('/courses')
+    .reply(200, htmlData);
 });
 
 test('test https://hexlet.io/courses', async () => {
   expect.assertions(1);
-  nock('https://hexlet.io/')
-    .get('/courses')
-    .reply(200, htmlData);
   const pathToTestFile = await pageLoader(`${pathToTemp}/`, 'https://hexlet.io/courses');
   const expectData = await fsPromises.readFile(pathToTestFile);
   expect(expectData.toString()).toEqual(htmlData.toString());
