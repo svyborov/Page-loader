@@ -1,9 +1,7 @@
 import axios from 'axios';
-// import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import url from 'url';
 
-// axios.defaults.adapter = httpAdapter;
 const fsPromises = fs.promises;
 
 const normilizefileName = (address) => {
