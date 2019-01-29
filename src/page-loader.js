@@ -7,10 +7,8 @@ import url from 'url';
 const fsPromises = fs.promises;
 
 const normilizefileName = (address) => {
-  const regex = RegExp(/\w/);
-  const parsedAddress = url.parse(address);
-  const shortAddress = parsedAddress.host + parsedAddress.path;
-  const fileName = shortAddress.split('').reduce((acc, s) => (regex.test(s) ? acc + s : `${acc}-`), '');
+  const { host, path } = url.parse(address);
+  const fileName = `${host}${path}`.replace(/\W/g, '-');
   return fileName.includes('.html') ? fileName : `${fileName}.html`;
 };
 

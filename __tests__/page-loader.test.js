@@ -2,41 +2,27 @@ import nock from 'nock';
 import axios from 'axios';
 import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
-import url from 'url';
-import pageLoader from '../src'
+import path from 'path';
 import os from 'os';
+import pageLoader from '../src';
 
-//const host = 'http://localhost';
-
-//axios.defaults.host = host;
+const fsPromises = fs.promises;
 axios.defaults.adapter = httpAdapter;
+const pathToFixture = './__tests__/__fixtures__/hexlet-io-courses.html';
+let pathToTemp;
+let htmlData;
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(3).toBe(3);
+beforeEach(async () => {
+  pathToTemp = await fsPromises.mkdtemp(`${os.tmpdir()}${path.sep}`);
+  htmlData = await fsPromises.readFile(pathToFixture);
 });
 
-test('test hexlet.io', () => {
-  const dir = os.tmpdir();
-  console.log(dir);
+test('test https://hexlet.io/courses', async () => {
+  expect.assertions(1);
   nock('https://hexlet.io/')
     .get('/courses')
-    .reply(200, 'test data');
-  const data = pageLoader(`${dir}/`, 'https://hexlet.io/courses');
-  data.then(qwe => fs.promises.readFile(qwe).then(zxc => console.log(zxc.toString())));
-  /*
-  axios.get('/test').then(response => {
-    expect(response.data).to.be.equal('test data');
-    done();
-  }); */
-  expect('peanut butter').toBe('peanut butter');
+    .reply(200, htmlData);
+  const pathToTestFile = await pageLoader(`${pathToTemp}/`, 'https://hexlet.io/courses');
+  const expectData = await fsPromises.readFile(pathToTestFile);
+  expect(expectData.toString()).toEqual(htmlData.toString());
 });
-/*
-test('the fetch fails with an error', async () => {
-  expect.assertions(1);
-  try {
-    await fetchData();
-  } catch (e) {
-    expect(e).toMatch('error');
-  }
-});
-*/

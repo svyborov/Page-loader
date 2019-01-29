@@ -1,11 +1,14 @@
 {
-  "name": "page-loader",
-  "version": "0.0.1",
+  "name": "page-loader-by-vsa",
+  "version": "0.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "bin": {
     "pageLoader": "dist/bin/page-loader.js"
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "axios": "^0.18.0",
     "commander": "^2.19.0",
