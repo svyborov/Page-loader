@@ -1,6 +1,6 @@
 {
   "name": "page-loader-by-vsa",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/index.js",
   "bin": {
@@ -11,6 +11,7 @@
   ],
   "dependencies": {
     "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
     "commander": "^2.19.0",
     "listr": "^0.14.3",
     "nock": "^10.0.6"
