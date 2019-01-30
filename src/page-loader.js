@@ -23,22 +23,8 @@ const loadPage = (address, pathToSave = '') => {
     })
     .then(() => {
       const $ = cheerio.load(res.data);
-      const elemsWithAssets = $('script, link, img');
-      console.log(elemsWithAssets);
-      const scripts = $('body');
-      console.log(scripts);
-      const fruits = [];
-      const needTags = scripts.filter((i, el) => {
-        // this === el
-        console.log(el);
-        return $(el).attr('class') === 'orange';
-      });
-      console.log(needTags);
-      /*
-      scripts.each((i, elem) => {
-        fruits[i] = $(elem).attr('src');
-      }); */
-      console.log(fruits);
+      const tags = $('script, link, img');
+      console.log(tags);
     })
     .catch((error) => {
       throw error;
