@@ -1,3 +1,3 @@
-import pageLoader from './page-loader';
+import loadPage from './page-loader';
 
-export default pageLoader;
+export default loadPage;

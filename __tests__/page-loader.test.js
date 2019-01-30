@@ -4,7 +4,7 @@ import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import pageLoader from '../src';
+import loadPage from '../src';
 
 const fsPromises = fs.promises;
 axios.defaults.adapter = httpAdapter;
@@ -22,8 +22,7 @@ beforeEach(async () => {
 });
 
 test('test https://hexlet.io/courses', async () => {
-  expect.assertions(1);
-  const pathToTestFile = await pageLoader(`${pathToTemp}/`, 'https://hexlet.io/courses');
-  const expectData = await fsPromises.readFile(pathToTestFile);
+  await loadPage('https://hexlet.io/courses', pathToTemp);
+  const expectData = await fsPromises.readFile(path.resolve(pathToTemp, fileName));
   expect(expectData.toString()).toEqual(htmlData.toString());
 });

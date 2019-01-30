@@ -1,6 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import url from 'url';
+import * as _path from 'path';
 
 const fsPromises = fs.promises;
 
@@ -10,15 +11,13 @@ const normilizefileName = (address) => {
   return fileName.includes('.html') ? fileName : `${fileName}.html`;
 };
 
-const pageLoader = (path = '', address) => {
+const loadPage = (address, pathToSave = '') => {
   const fileName = normilizefileName(address);
   return axios.get(address)
-    .then((response) => {
-      // console.log(response.data);
-      fsPromises.writeFile(`${path}${fileName}`, response.data);
-      return `${path}${fileName}`;
-    })
-    .catch(error => console.log(error));
+    .then(response => fsPromises.writeFile(_path.resolve(pathToSave, fileName), response.data))
+    .catch((error) => {
+      throw error;
+    });
 };
 
-export default pageLoader;
+export default loadPage;
