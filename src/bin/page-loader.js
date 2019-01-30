@@ -7,5 +7,5 @@ pageloader
   .description('Download web-page from address to path.')
   .option('-o, --output [path]', 'Output path')
   .arguments('[adress]')
-  .action(adress => loadPage(pageloader.output, adress))
+  .action(adress => loadPage(adress, pageloader.output))
   .parse(process.argv);
