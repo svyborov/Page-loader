@@ -41,5 +41,17 @@
   "bugs": {
     "url": "https://github.com/svyborov/project-lvl3-s394/issues"
   },
-  "homepage": "https://github.com/svyborov/project-lvl3-s394#readme"
+  "homepage": "https://github.com/svyborov/project-lvl3-s394#readme",
+  
+  "jest": {
+  "testEnvironment": "node",
+  "collectCoverage": true,
+  "coverageReporters": [
+    "lcov"
+  ],
+  "testPathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/__tests__/__fixtures__/"
+  ]
+}
 }

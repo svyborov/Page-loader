@@ -43,11 +43,11 @@ const loadPage = (address, pathToSave = '') => {
         const newPath = path.join(pathToSourceFiles, localFileName);
         $(el).attr(tagsTypes[el.name], newPath);
         return axios.get(localAdress)
-          .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
-          .catch(console.log);
+          .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data));
       });
     })
-    .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), $.html()));
+    .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), $.html()))
+    .catch(console.log);
 };
 
 export default loadPage;
