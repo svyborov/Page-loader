@@ -47,7 +47,10 @@ const loadPage = (address, pathToSave = '') => {
       });
     })
     .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), $.html()))
-    .catch(console.log);
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
 };
 
 export default loadPage;
