@@ -60,12 +60,7 @@ const loadPage = (address, pathToSave = '') => {
     })
     .then(() => fsPromises.mkdir(newDir))
     .then(() => {
-      logDebug(`We make dir: ${newDir}`);
-      return rewriteHtml(res.data, sourcesPath);
-    })
-    .then((htmlAndLinks) => {
-      logDebug(`Html and links: ${htmlAndLinks.html} %%% ${htmlAndLinks.links}`);
-      const { $, links } = htmlAndLinks;
+      const { $, links } = rewriteHtml(res.data, sourcesPath);
       html = $;
       const promises = links.map((link) => {
         const linkUrl = new URL(link, address);
@@ -73,11 +68,7 @@ const loadPage = (address, pathToSave = '') => {
         const linkName = makeName(link);
         const { resType } = linkName;
         const newPath = path.join(sourcesPath, linkName.fileName.slice(1));
-        return axios({
-          method: 'get',
-          url: href,
-          resType,
-        })
+        return axios({ method: 'get', url: href, resType })
           .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
           .then(() => logDebug(`We create source file: ${newPath}`));
       });
