@@ -5,7 +5,7 @@ import path from 'path';
 import cheerio from 'cheerio';
 import debug from 'debug';
 
-const loadDebug = debug('page-loader');
+const logDebug = debug('page-loader');
 
 const fsPromises = fs.promises;
 
@@ -24,54 +24,70 @@ const resTypes = {
 };
 
 const normilizefileName = (address) => {
-  let ext = path.extname(address);
+  const ext = path.extname(address) || '.html';
   const { hostname, pathname } = url.parse(address);
-  if (!ext) {
-    ext = '.html';
-  }
-  const fileName = `${hostname || ''}${pathname}`.replace(ext, '').replace(/\W/g, '-');
+  const fileName = path.join(hostname || '', pathname).replace(ext, '').replace(/\W/g, '-');
   const resType = resTypes[ext];
   return { fileName: `${fileName}${ext}`, pathToSourceFiles: `${fileName}_files`, resType };
+};
+
+const getLinks = (htmlData, pathToFile) => {
+  const $ = cheerio.load(htmlData);
+  const tags = $('script[src^="/"], link[href^="/"], img[src^="/"]');
+  let pathsAndNames;
+  const links = [];
+  tags.each((i, el) => {
+    const link = $(el).attr(tagsTypes[el.name]);
+    logDebug(`Work with link: ${link}`);
+    links.push(link);
+    // const { href } = new URL(link, address);
+    pathsAndNames = normilizefileName(link);
+    const localFileName = pathsAndNames.fileName.slice(1);
+    // const { resType } = pathsAndNames;
+    const newPath = path.join(pathToFile, localFileName);
+    $(el).attr(tagsTypes[el.name], newPath);
+  });
+  return { pathsAndNames, links };
 };
 
 const loadPage = (address, pathToSave = '') => {
   const { fileName, pathToSourceFiles } = normilizefileName(address);
   const { host } = url.parse(address);
-  axios.defaults.host = host;
   let res;
   let $;
   const newDir = path.resolve(pathToSave, pathToSourceFiles);
-  loadDebug(`normilizefileName: ${fileName}, ${pathToSourceFiles}. host: ${host}`);
+  logDebug(`normilizefileName: ${fileName}, ${pathToSourceFiles}. host: ${host}`);
   return axios.get(address)
     .then((response) => {
       res = response;
     })
     .then(() => fsPromises.mkdir(newDir))
     .then(() => {
-      loadDebug(`We make dir: ${newDir}`);
+      logDebug(`We make dir: ${newDir}`);
       $ = cheerio.load(res.data);
       const tags = $('script[src^="/"], link[href^="/"], img[src^="/"]');
-      return tags.each((i, el) => {
+      tags.each((i, el) => {
         const link = $(el).attr(tagsTypes[el.name]);
-        loadDebug(`Work with link: ${link}`);
-        const localAdress = new URL(link, address).href;
-        const localFileName = normilizefileName(link).fileName.slice(1);
-        const responseType = normilizefileName(link).resType;
+        logDebug(`Work with link: ${link}`);
+        const { href } = new URL(link, address);
+        const localNormilizeFile = normilizefileName(link);
+        const localFileName = localNormilizeFile.fileName.slice(1);
+        const { resType } = localNormilizeFile;
         const newPath = path.join(pathToSourceFiles, localFileName);
         $(el).attr(tagsTypes[el.name], newPath);
         return axios({
           method: 'get',
-          url: localAdress,
-          responseType,
+          url: href,
+          resType,
         })
           .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
-          .then(() => loadDebug(`We create source file: ${newPath}`));
+          .then(() => logDebug(`We create source file: ${newPath}`));
       });
     })
     .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), $.html()))
-    .then(() => loadDebug(`We create main file: ${fileName}`))
+    .then(() => logDebug(`We create main file: ${fileName}`))
     .catch((error) => {
-      loadDebug(`ERROR: ${error}`);
+      logDebug(`ERROR: ${error}`);
       throw error;
     });
 };
