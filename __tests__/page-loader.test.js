@@ -15,6 +15,7 @@ const fileNameBefore = 'before-hexlet-io-courses.html';
 const fileNameAfter = 'after-hexlet-io-courses.html';
 const fileName = 'hexlet-io-courses.html';
 const suorcehDir = 'hexlet-io-courses_files';
+const pathToBadTemp = '/qweqwe/xzczx';
 let pathToTemp;
 let beforeHtmlData;
 let afterHtmlData;
@@ -31,7 +32,9 @@ beforeEach(async () => {
     .get('/courses')
     .reply(200, beforeHtmlData)
     .get('/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js')
-    .reply(200, souceFileHtml);
+    .reply(200, souceFileHtml)
+    .get('/asdqwe')
+    .reply(404);
 });
 
 
@@ -47,3 +50,27 @@ test('test source files https://hexlet.io/courses', async () => {
   const expectDataN = await fsPromises.readFile(path.join(pathToResource, sourceFileName));
   expect(expectDataN.toString()).toEqual(souceFileHtml.toString());
 });
+
+test('bad link', async () => {
+  await expect(loadPage('https://hexlet.io/asdqwe', pathToTemp).catch(console.log)).rejects.toThrowErrorMatchingSnapshot();
+});
+
+test('no directory', async () => {
+  await expect(loadPage('https://hexlet.io/courses', pathToBadTemp).catch(console.log)).rejects.toThrowErrorMatchingSnapshot();
+});
+
+/*
+function drinkFlavor(flavor) {
+  if (flavor == 'octopus') {
+    throw new DisgustingFlavorError('yuck, octopus flavor');
+  }
+  // Do some other stuff
+}
+
+ test('throws on octopus', () => {
+  function drinkOctopus() {
+    drinkFlavor('octopus');
+  }
+
+  expect(drinkOctopus).toThrowErrorMatchingSnapshot();
+}); */

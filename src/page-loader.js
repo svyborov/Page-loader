@@ -21,6 +21,13 @@ const resTypes = {
   html: 'text',
   png: 'stream',
   jpg: 'stream',
+  ico: 'stream',
+};
+
+const errorsCodes = {
+  EACCES: 'no access to',
+  EEXIST: 'file already exists',
+  ENOENT: 'no such file or directory',
 };
 
 const makeName = (address) => {
@@ -44,7 +51,7 @@ const rewriteHtml = (htmlData, pathToFile) => {
     const newPath = path.join(pathToFile, fileName.slice(1));
     $(el).attr(tagsTypes[el.name], newPath);
   });
-  logDebug(`Is $ OK?: ${$}`);
+  logDebug(`Rewrite HTML: ${$}`);
   return { links, $ };
 };
 
@@ -75,10 +82,15 @@ const loadPage = (address, pathToSave = '') => {
       return Promise.all(promises);
     })
     .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), html.html()))
-    .then(() => logDebug(`We create main file: ${fileName}`))
     .catch((error) => {
-      logDebug(`ERROR: ${error}`);
-      throw error;
+      let messages;
+      if (error.response) {
+        messages = `${error.response.config.url} is ${error.response.statusText}`;
+      } else {
+        messages = `${errorsCodes[error.code]} ${error.path}`;
+      }
+      logDebug(`ERROR: ${messages}`);
+      throw messages;
     });
 };
 
