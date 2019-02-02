@@ -4,6 +4,7 @@ import url from 'url';
 import path from 'path';
 import cheerio from 'cheerio';
 import debug from 'debug';
+import Listr from 'listr';
 
 const logDebug = debug('page-loader');
 
@@ -31,6 +32,18 @@ const errorsCodes = {
   404: 'Not Found',
 };
 
+const createErrorMessage = (error) => {
+  let message;
+  if (error.response) {
+    const statusText = error.response.statusText
+      ? error.response.statusText : errorsCodes[error.response.status];
+    message = `${error.response.config.url} is ${statusText}`;
+  } else {
+    message = `${errorsCodes[error.code]} ${error.path}`;
+  }
+  return message;
+};
+
 const makeName = (address) => {
   const ext = path.extname(address) || '.html';
   const { hostname, pathname } = url.parse(address);
@@ -56,6 +69,18 @@ const rewriteHtml = (htmlData, pathToFile) => {
   return { links, $ };
 };
 
+const makeTask = (title, task) => new Listr([{ title, task }]).run().catch(console.error);
+
+const loadSourceFile = (link, address, pathToSave, sourcesPath) => {
+  const linkUrl = new URL(link, address);
+  const { href } = linkUrl;
+  const linkName = makeName(link);
+  const { resType } = linkName;
+  const newPath = path.join(sourcesPath, linkName.fileName.slice(1));
+  return makeTask(`Download link ${link}`, () => axios({ method: 'get', url: href, resType })
+    .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
+    .then(() => logDebug(`We create source file: ${newPath}`)));
+};
 
 const loadPage = (address, pathToSave = '') => {
   const { fileName, sourcesPath } = makeName(address);
@@ -71,28 +96,13 @@ const loadPage = (address, pathToSave = '') => {
     .then(() => {
       const { $, links } = rewriteHtml(res.data, sourcesPath);
       html = $;
-      const promises = links.map((link) => {
-        const linkUrl = new URL(link, address);
-        const { href } = linkUrl;
-        const linkName = makeName(link);
-        const { resType } = linkName;
-        const newPath = path.join(sourcesPath, linkName.fileName.slice(1));
-        return axios({ method: 'get', url: href, resType })
-          .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
-          .then(() => logDebug(`We create source file: ${newPath}`));
-      });
+      makeTask('load HTML', () => html);
+      const promises = links.map(link => loadSourceFile(link, address, pathToSave, sourcesPath));
       return Promise.all(promises);
     })
-    .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), html.html()))
+    .then(() => makeTask(`Write main file: ${fileName}`, () => fsPromises.writeFile(path.resolve(pathToSave, fileName), html.html())))
     .catch((err) => {
-      let message;
-      if (err.response) {
-        const statusText = err.response.statusText
-          ? err.response.statusText : errorsCodes[err.response.status];
-        message = `${err.response.config.url} is ${statusText}`;
-      } else {
-        message = `${errorsCodes[err.code]} ${err.path}`;
-      }
+      const message = createErrorMessage(err);
       logDebug(`ERROR: ${message}`);
       throw message;
     });

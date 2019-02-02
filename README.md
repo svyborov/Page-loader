@@ -20,3 +20,7 @@ $ pageloader --output /var/tmp https://hexlet.io/courses
 Errors:
 
 [![asciicast](https://asciinema.org/a/E6MbPSUL67dJNUoDRVPc8kvZK.svg)](https://asciinema.org/a/E6MbPSUL67dJNUoDRVPc8kvZK)
+
+Use Listr:
+
+[![asciicast](https://asciinema.org/a/GLusVzDUjLcY8OYTUY1hwpyoQ.svg)](https://asciinema.org/a/GLusVzDUjLcY8OYTUY1hwpyoQ)
