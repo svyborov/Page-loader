@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`bad link 1`] = `"https://hexlet.io/asdqwe is Not Found"`;
-
-exports[`no directory 1`] = `"no such file or directory, mkdir '/qweqwe/xzczx/hexlet-io-courses_files'"`;

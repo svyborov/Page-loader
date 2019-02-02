@@ -28,6 +28,7 @@ const errorsCodes = {
   EACCES: 'no access to',
   EEXIST: 'file already exists',
   ENOENT: 'no such file or directory',
+  404: 'Not Found',
 };
 
 const makeName = (address) => {
@@ -55,6 +56,7 @@ const rewriteHtml = (htmlData, pathToFile) => {
   return { links, $ };
 };
 
+
 const loadPage = (address, pathToSave = '') => {
   const { fileName, sourcesPath } = makeName(address);
   const newDir = path.resolve(pathToSave, sourcesPath);
@@ -63,6 +65,9 @@ const loadPage = (address, pathToSave = '') => {
   logDebug(`makeName: ${fileName}, ${sourcesPath}.`);
   return axios.get(address)
     .then((response) => {
+      if (response.status !== 200) {
+        throw response;
+      }
       res = response;
     })
     .then(() => fsPromises.mkdir(newDir))
@@ -82,15 +87,17 @@ const loadPage = (address, pathToSave = '') => {
       return Promise.all(promises);
     })
     .then(() => fsPromises.writeFile(path.resolve(pathToSave, fileName), html.html()))
-    .catch((error) => {
-      let messages;
-      if (error.response) {
-        messages = `${error.response.config.url} is ${error.response.statusText}`;
+    .catch((err) => {
+      let message;
+      if (err.response) {
+        const statusText = err.response.statusText
+          ? err.response.statusText : errorsCodes[err.response.status];
+        message = `${err.response.config.url} is ${statusText}`;
       } else {
-        messages = `${errorsCodes[error.code]} ${error.path}`;
+        message = `${errorsCodes[err.code]} ${err.path}`;
       }
-      logDebug(`ERROR: ${messages}`);
-      throw messages;
+      logDebug(`ERROR: ${message}`);
+      throw message;
     });
 };
 

@@ -15,7 +15,7 @@ const fileNameBefore = 'before-hexlet-io-courses.html';
 const fileNameAfter = 'after-hexlet-io-courses.html';
 const fileName = 'hexlet-io-courses.html';
 const suorcehDir = 'hexlet-io-courses_files';
-const pathToBadTemp = '/qweqwe/xzczx';
+const pathToBadTemp = '/badPath/asdqwe';
 let pathToTemp;
 let beforeHtmlData;
 let afterHtmlData;
@@ -33,7 +33,7 @@ beforeEach(async () => {
     .reply(200, beforeHtmlData)
     .get('/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js')
     .reply(200, souceFileHtml)
-    .get('/asdqwe')
+    .get('/incorrect')
     .reply(404);
 });
 
@@ -52,25 +52,11 @@ test('test source files https://hexlet.io/courses', async () => {
 });
 
 test('bad link', async () => {
-  await expect(loadPage('https://hexlet.io/asdqwe', pathToTemp).catch(console.log)).rejects.toThrowErrorMatchingSnapshot();
+  const message = 'https://hexlet.io/incorrect is Not Found';
+  await loadPage('https://hexlet.io/incorrect', pathToTemp).catch(e => expect(e).toBe(message));
 });
 
 test('no directory', async () => {
-  await expect(loadPage('https://hexlet.io/courses', pathToBadTemp).catch(console.log)).rejects.toThrowErrorMatchingSnapshot();
+  const message = 'no such file or directory /badPath/asdqwe/hexlet-io-courses_files';
+  await loadPage('https://hexlet.io/courses', pathToBadTemp).catch(e => expect(e).toBe(message));
 });
-
-/*
-function drinkFlavor(flavor) {
-  if (flavor == 'octopus') {
-    throw new DisgustingFlavorError('yuck, octopus flavor');
-  }
-  // Do some other stuff
-}
-
- test('throws on octopus', () => {
-  function drinkOctopus() {
-    drinkFlavor('octopus');
-  }
-
-  expect(drinkOctopus).toThrowErrorMatchingSnapshot();
-}); */
