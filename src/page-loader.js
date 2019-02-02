@@ -88,7 +88,7 @@ const loadPage = (address, pathToSave = '') => {
   let res;
   let html;
   logDebug(`makeName: ${fileName}, ${sourcesPath}.`);
-  return axios.get(address)
+  makeTask('Download page', () => axios.get(address)
     .then((response) => {
       res = response;
     })
@@ -96,7 +96,6 @@ const loadPage = (address, pathToSave = '') => {
     .then(() => {
       const { $, links } = rewriteHtml(res.data, sourcesPath);
       html = $;
-      makeTask('load HTML', () => html);
       const promises = links.map(link => loadSourceFile(link, address, pathToSave, sourcesPath));
       return Promise.all(promises);
     })
@@ -105,7 +104,7 @@ const loadPage = (address, pathToSave = '') => {
       const message = createErrorMessage(err);
       logDebug(`ERROR: ${message}`);
       throw message;
-    });
+    }));
 };
 
 export default loadPage;
