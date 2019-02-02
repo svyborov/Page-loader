@@ -88,7 +88,7 @@ const loadPage = (address, pathToSave = '') => {
   let res;
   let html;
   logDebug(`makeName: ${fileName}, ${sourcesPath}.`);
-  makeTask('Download page', () => axios.get(address)
+  return axios.get(address)
     .then((response) => {
       res = response;
     })
@@ -104,7 +104,7 @@ const loadPage = (address, pathToSave = '') => {
       const message = createErrorMessage(err);
       logDebug(`ERROR: ${message}`);
       throw message;
-    }));
+    });
 };
 
 export default loadPage;
