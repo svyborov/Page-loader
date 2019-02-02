@@ -16,4 +16,7 @@ $ pageloader --output /var/tmp https://hexlet.io/courses
 ## Example
 
 [![asciicast](https://asciinema.org/a/HTDcrzXju1msR2BA5uc7dZEOV.svg)](https://asciinema.org/a/HTDcrzXju1msR2BA5uc7dZEOV)
- 
+
+Errors:
+
+[![asciicast](https://asciinema.org/a/E6MbPSUL67dJNUoDRVPc8kvZK.svg)](https://asciinema.org/a/E6MbPSUL67dJNUoDRVPc8kvZK)
