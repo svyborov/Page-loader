@@ -65,9 +65,6 @@ const loadPage = (address, pathToSave = '') => {
   logDebug(`makeName: ${fileName}, ${sourcesPath}.`);
   return axios.get(address)
     .then((response) => {
-      if (response.status !== 200) {
-        throw response;
-      }
       res = response;
     })
     .then(() => fsPromises.mkdir(newDir))
