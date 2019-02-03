@@ -23,4 +23,4 @@ Errors:
 
 Use Listr:
 
-[![asciicast](https://asciinema.org/a/GLusVzDUjLcY8OYTUY1hwpyoQ.svg)](https://asciinema.org/a/GLusVzDUjLcY8OYTUY1hwpyoQ)
+[![asciicast](https://asciinema.org/a/afTGiZSku61KeQkETsiOelyaN.svg)](https://asciinema.org/a/afTGiZSku61KeQkETsiOelyaN)

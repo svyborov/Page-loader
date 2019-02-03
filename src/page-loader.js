@@ -77,9 +77,9 @@ const loadSourceFile = (link, address, pathToSave, sourcesPath) => {
   const linkName = makeName(link);
   const { resType } = linkName;
   const newPath = path.join(sourcesPath, linkName.fileName.slice(1));
-  return makeTask(`Download link ${link}`, () => axios({ method: 'get', url: href, resType })
+  return axios({ method: 'get', url: href, resType })
     .then(response => fsPromises.writeFile(path.resolve(pathToSave, newPath), response.data))
-    .then(() => logDebug(`We create source file: ${newPath}`)));
+    .then(() => logDebug(`We create source file: ${newPath}`));
 };
 
 const loadPage = (address, pathToSave = '') => {
@@ -96,8 +96,10 @@ const loadPage = (address, pathToSave = '') => {
     .then(() => {
       const { $, links } = rewriteHtml(res.data, sourcesPath);
       html = $;
-      const promises = links.map(link => loadSourceFile(link, address, pathToSave, sourcesPath));
-      return Promise.all(promises);
+      const tasks = [];
+      links.forEach(link => tasks.push({ title: `Download page ${link}`, task: () => loadSourceFile(link, address, pathToSave, sourcesPath) }));
+      const loadingPages = new Listr(tasks, { concurrent: true });
+      return makeTask('Download source pages', () => loadingPages);
     })
     .then(() => makeTask(`Write main file: ${fileName}`, () => fsPromises.writeFile(path.resolve(pathToSave, fileName), html.html())))
     .catch((err) => {
